@@ -1,0 +1,36 @@
+services:
+
+ apiprodutos:
+   build:
+     context: .
+     dockerfile: Dockerfile
+   ports:
+     - "8084:8084"
+   networks:
+     - app-network
+   depends_on:
+     - mongodb
+     - rabbitmq
+
+ mongodb:
+   image: mongo:latest
+   container_name: mongodb_apiprodutos
+   networks:
+     - app-network
+   ports:
+     - "27017:27017"
+
+ rabbitmq:
+   image: rabbitmq:3-management
+   container_name: rabbitmq_apiprodutos
+   networks:
+     - app-network
+   ports:
+     - "5672:5672"
+     - "15672:15672"
+networks:
+ app-network:
+   driver: bridge
+
+
+
