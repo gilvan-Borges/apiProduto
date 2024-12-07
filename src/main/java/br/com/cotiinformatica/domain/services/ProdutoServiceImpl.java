@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import br.com.cotiinformatica.domain.contracts.components.ProdutoHistoricoMessage;
 import br.com.cotiinformatica.domain.contracts.services.ProdutoService;
+import br.com.cotiinformatica.domain.models.dtos.ProdutoHistorico.TipoAcao;
 import br.com.cotiinformatica.domain.models.dtos.ProdutoRequest;
 import br.com.cotiinformatica.domain.models.dtos.ProdutoResponse;
 import br.com.cotiinformatica.domain.models.entities.Categoria;
@@ -18,8 +20,12 @@ import br.com.cotiinformatica.infrastructure.repositories.ProdutoRepository;
 
 @Service
 public class ProdutoServiceImpl implements ProdutoService {
+
 	@Autowired
 	ProdutoRepository produtoRepository;
+
+	@Autowired
+	ProdutoHistoricoMessage produtoHistoricoMessage;
 
 	@Override
 	public ProdutoResponse criarProduto(ProdutoRequest request) {
@@ -35,7 +41,11 @@ public class ProdutoServiceImpl implements ProdutoService {
 		produto.setAtivo(true);
 
 		produtoRepository.save(produto);
-		return toResponse(produto);
+
+		var response = toResponse(produto);
+
+		produtoHistoricoMessage.criarHistorico(response, TipoAcao.CADASTRO);
+		return response;
 	}
 
 	@Override
@@ -50,7 +60,10 @@ public class ProdutoServiceImpl implements ProdutoService {
 		produto.setDataHoraUltimaAlteracao(LocalDateTime.now());
 
 		produtoRepository.save(produto);
-		return toResponse(produto);
+		var response = toResponse(produto);
+
+		produtoHistoricoMessage.criarHistorico(response, TipoAcao.EDICAO);
+		return response;
 	}
 
 	@Override
@@ -62,7 +75,10 @@ public class ProdutoServiceImpl implements ProdutoService {
 		produto.setDataHoraUltimaAlteracao(LocalDateTime.now());
 
 		produtoRepository.save(produto);
-		return toResponse(produto);
+		var response = toResponse(produto);
+
+		produtoHistoricoMessage.criarHistorico(response, TipoAcao.EXCLUSAO);
+		return response;
 	}
 
 	@Override

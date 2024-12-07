@@ -30,7 +30,4 @@ services:
      - "15672:15672"
 networks:
  app-network:
-   driver: bridge
-
-
-
+   external: true
